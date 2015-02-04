@@ -16,26 +16,29 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.ipojo.annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>de.berlios.vch</groupId>
             <artifactId>download</artifactId>
             <type>bundle</type>
             <scope>provided</scope>
+            <version>[1.0.0,2.0.0)</version>
         </dependency>
         <dependency>
             <groupId>de.berlios.vch</groupId>
             <artifactId>parser</artifactId>
             <type>bundle</type>
             <scope>provided</scope>
+            <version>[3.0.0,4.0.0)</version>
         </dependency>
         <dependency>
             <groupId>de.berlios.vch</groupId>
             <artifactId>httpclient</artifactId>
             <type>bundle</type>
+            <scope>provided</scope>
+            <version>[1.0.0,2.0.0)</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.ipojo.annotations</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
