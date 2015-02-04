@@ -41,6 +41,7 @@ public class HttpDownload extends AbstractDownload {
         
         HttpURLConnection con = null;
         RandomAccessFile out = null;
+        SpeedometerInputStream in = null;
         try {
             file = new File(getLocalFile());
             
@@ -83,7 +84,7 @@ public class HttpDownload extends AbstractDownload {
             }
 
             
-            SpeedometerInputStream in = new SpeedometerInputStream(con.getInputStream());
+			in = new SpeedometerInputStream(con.getInputStream());
             logger.log(LogService.LOG_DEBUG, "Download started for " + uri.toString() + " at position " + getLoadedBytes());
             setStatus(Status.DOWNLOADING);
             byte[] b = new byte[10240];
@@ -116,6 +117,14 @@ public class HttpDownload extends AbstractDownload {
             setStatus(Status.FAILED);
             setException(e);
         } finally {
+        	if(in != null) {
+        		try {
+					in.close();
+				} catch (IOException e) {
+					logger.log(LogService.LOG_WARNING, "Couldn't close HTTP stream", e);
+				}
+        	}
+
             if(con != null) {
                 con.disconnect();
             }
