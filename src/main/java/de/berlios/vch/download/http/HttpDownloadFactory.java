@@ -23,20 +23,21 @@ import de.berlios.vch.parser.IVideoPage;
 @Component
 @Provides
 public class HttpDownloadFactory implements DownloadFactory {
-    
+
     @Requires
     private LogService logger;
-    
+
     private boolean valid = false;
-    
+
     public HttpDownloadFactory(LogService logger) {
         this.logger = logger;
     }
-    
+
     @Override
     public boolean accept(IVideoPage video) {
         if(valid && video.getVideoUri() != null) {
-            return "http".equals(video.getVideoUri().getScheme());
+            String scheme = video.getVideoUri().getScheme();
+            return "http".equals(scheme) || "https".equals(scheme);
         }
         return false;
     }
@@ -53,15 +54,15 @@ public class HttpDownloadFactory implements DownloadFactory {
                 throw new PlaylistFileFoundException();
             }
         }
-        
+
         return new HttpDownload(page, logger);
     }
-    
+
     @Validate
     public void start() {
         valid = true;
     }
-    
+
     @Invalidate
     public void stop() {
         valid = false;
