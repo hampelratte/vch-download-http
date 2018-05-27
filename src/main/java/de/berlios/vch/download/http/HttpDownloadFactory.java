@@ -37,7 +37,23 @@ public class HttpDownloadFactory implements DownloadFactory {
     public boolean accept(IVideoPage video) {
         if(valid && video.getVideoUri() != null) {
             String scheme = video.getVideoUri().getScheme();
-            return "http".equals(scheme) || "https".equals(scheme);
+            if("http".equals(scheme) || "https".equals(scheme)) {
+                try {
+                    Map<String, List<String>> header = HttpUtils.head(video.getVideoUri().toString(), null, "utf-8");
+                    if(header.containsKey("Location")) {
+                        video.setVideoUri(new URI(header.get("Location").get(0)));
+                        return accept(video);
+                    }
+                    if(header.containsKey("Content-Type")) {
+                        String contentType = header.get("Content-Type").get(0);
+                        return contentType.startsWith("video/");
+                    }
+                } catch (IOException e) {
+                    logger.log(LogService.LOG_ERROR, "Couldn't execute HEAD request", e);
+                } catch (URISyntaxException e) {
+                    logger.log(LogService.LOG_ERROR, "Redirect failed", e);
+                }
+            }
         }
         return false;
     }
@@ -45,7 +61,7 @@ public class HttpDownloadFactory implements DownloadFactory {
     @Override
     public Download createDownload(IVideoPage page) throws IOException, URISyntaxException, PlaylistFileFoundException {
         // some times, we get an playlist file, like asx. we have to cope with that
-        Map<String, List<String>> header = HttpUtils.head(page.getVideoUri().toString(), null, "UTF-8");
+        Map<String, List<String>> header = HttpUtils.head(page.getVideoUri().toString(), null, "utf-8");
         if(header.get("Content-Type").size() > 0) {
             String contentType = header.get("Content-Type").get(0);
             if("video/x-ms-asf".equals(contentType)) {
